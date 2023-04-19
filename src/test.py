@@ -100,7 +100,8 @@ def train(conf: omegaconf.DictConfig) -> None:
     pl_module.hparams.test_file = pl_data_module.conf.test_file
     # trainer
     trainer = pl.Trainer(
-        gpus=conf.gpus,
+        accelerator=conf.accelerator,
+        devices=conf.devices
     )
     # Manually run prep methods on DataModule
     pl_data_module.prepare_data()

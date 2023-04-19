@@ -101,7 +101,7 @@ class Rebel(datasets.GeneratorBasedBuilder):
         logging.info("generating examples from = %s", filepath)
         relations_df = pd.read_csv(self.config.data_files['relations'], header = None, sep='\t')
         relations = list(relations_df[0])
-
+        filepath = str(filepath[0])
         with open(filepath, encoding="utf-8") as f:
             for id_, row in enumerate(f):
                 article = json.loads(row)

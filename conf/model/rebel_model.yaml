@@ -1,8 +1,8 @@
 # @package _global_
 
-model_name_or_path: '/home/martinez/rebel/model/Rebel-large'
-config_name: '/home/martinez/rebel/model/Rebel-large'
-tokenizer_name: '/home/martinez/rebel/model/Rebel-large'
+model_name_or_path: 'c:/Users/Branson/Desktop/rebel/model/Rebel-large'
+config_name: 'c:/Users/Branson/Desktop/rebel/model/Rebel-large'
+tokenizer_name: 'c:/Users/Branson/Desktop/rebel/model/Rebel-large'
 cache_dir: 
 use_fast_tokenizer: True
 

@@ -16,7 +16,7 @@ from generate_samples import GenerateTextSamplesCallback
 
 def train(conf: omegaconf.DictConfig) -> None:
     pl.seed_everything(conf.seed)
-    
+
     config = AutoConfig.from_pretrained(
         conf.config_name if conf.config_name else conf.model_name_or_path,
         decoder_start_token_id = 0,
@@ -31,7 +31,6 @@ def train(conf: omegaconf.DictConfig) -> None:
         "additional_special_tokens": ['<obj>', '<subj>', '<triplet>', '<head>', '</head>', '<tail>', '</tail>'], # Here the tokens for head and tail are legacy and only needed if finetuning over the public REBEL checkpoint, but are not used. If training from scratch, remove this line and uncomment the next one.
 #         "additional_special_tokens": ['<obj>', '<subj>', '<triplet>'],
     }
-
     tokenizer = AutoTokenizer.from_pretrained(
         conf.tokenizer_name if conf.tokenizer_name else conf.model_name_or_path,
         **tokenizer_kwargs
@@ -56,8 +55,7 @@ def train(conf: omegaconf.DictConfig) -> None:
 
     # main module declaration
     pl_module = BasePLModule(conf, config, tokenizer, model)
-
-    wandb_logger = WandbLogger(project = conf.dataset_name.split('/')[-1].replace('.py', ''), name = conf.model_name_or_path.split('/')[-1])
+    #wandb_logger = WandbLogger(project = conf.dataset_name.split('/')[-1].replace('.py', ''), name = conf.model_name_or_path.split('/')[-1])
 
     callbacks_store = []
 
@@ -85,7 +83,8 @@ def train(conf: omegaconf.DictConfig) -> None:
     callbacks_store.append(LearningRateMonitor(logging_interval='step'))
     # trainer
     trainer = pl.Trainer(
-        gpus=conf.gpus,
+        accelerator=conf.accelerator,
+        devices=conf.devices,
         accumulate_grad_batches=conf.gradient_acc_steps,
         gradient_clip_val=conf.gradient_clip_value,
         val_check_interval=conf.val_check_interval,
@@ -93,14 +92,12 @@ def train(conf: omegaconf.DictConfig) -> None:
         max_steps=conf.max_steps,
         # max_steps=total_steps,
         precision=conf.precision,
-        amp_level=conf.amp_level,
-        logger=wandb_logger,
-        resume_from_checkpoint=conf.checkpoint_path,
+        #logger=wandb_logger,
         limit_val_batches=conf.val_percent_check
     )
 
     # module fit
-    trainer.fit(pl_module, datamodule=pl_data_module)
+    trainer.fit(pl_module, datamodule=pl_data_module, ckpt_path=conf.checkpoint_path)
 
 @hydra.main(config_path='../conf', config_name='root')
 def main(conf: omegaconf.DictConfig):

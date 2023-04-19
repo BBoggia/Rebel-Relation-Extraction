@@ -110,7 +110,7 @@ class NYT(datasets.GeneratorBasedBuilder):
     def _generate_examples(self, filepath):
         """This function returns the examples in the raw (text) form."""
         logging.info("generating examples from = %s", filepath)
-
+        filepath = str(filepath[0])
         with open(filepath) as json_file:
             f = json.load(json_file)
             for id_, row in enumerate(f):

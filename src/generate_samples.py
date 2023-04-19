@@ -28,12 +28,12 @@ class GenerateTextSamplesCallback(Callback):  # pragma: no cover
         pl_module: LightningModule,
         outputs: Sequence,
         batch: Sequence,
-        batch_idx: int,
-        dataloader_idx: int,
+        batch_idx: int=0,
+        dataloader_idx: int=0,
     ) -> None:
         wandb_table = wandb.Table(columns=["Source", "Pred", "Gold"])
         # pl_module.logger.info("Executing translation callback")
-        if (trainer.batch_idx + 1) % self.logging_batch_interval != 0:  # type: ignore[attr-defined]
+        if (trainer.fit_loop.epoch_loop.batch_idx + 1) % self.logging_batch_interval != 0:  # type: ignore[attr-defined]
             return
         labels = batch.pop("labels")
         gen_kwargs = {
@@ -73,4 +73,4 @@ class GenerateTextSamplesCallback(Callback):  # pragma: no cover
             wandb_table.add_data(
                 source.replace('<pad>', ''), translation.replace('<pad>', ''), gold_output.replace('<pad>', '')
             )
-        pl_module.logger.experiment.log({"Triplets": wandb_table})
+        #pl_module.logger.experiment.log({"Triplets": wandb_table})

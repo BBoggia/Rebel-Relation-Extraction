@@ -5,7 +5,7 @@ from omegaconf import DictConfig
 import torch
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
-from datasets import load_dataset, set_caching_enabled
+from datasets import load_dataset, enable_caching
 from transformers import (
     AutoConfig,
     AutoModelForSeq2SeqLM,
@@ -62,11 +62,12 @@ class BasePLDataModule(pl.LightningDataModule):
         self.conf = conf
         self.tokenizer = tokenizer
         self.model = model
+        print('conf.dataset_name', conf.train_file)
         if conf.relations_file:
-            self.datasets = load_dataset(conf.dataset_name, data_files={'train': conf.train_file, 'dev': conf.validation_file, 'test': conf.test_file, 'relations': conf.relations_file})
+            self.datasets = load_dataset(str(conf.dataset_name), data_files={'train': str(conf.train_file), 'dev': str(conf.validation_file), 'test': str(conf.test_file), 'relations': str(conf.relations_file)})
         else:
-            self.datasets = load_dataset(conf.dataset_name, data_files={'train': conf.train_file, 'dev': conf.validation_file, 'test': conf.test_file})
-        set_caching_enabled(True)
+            self.datasets = load_dataset(str(conf.dataset_name), data_files={'train': str(conf.train_file), 'dev': str(conf.validation_file), 'test': str(conf.test_file)})
+        enable_caching()
         self.prefix = conf.source_prefix if conf.source_prefix is not None else ""
         self.column_names = self.datasets["train"].column_names
         # self.source_lang, self.target_lang, self.text_column, self.summary_column = None, None, None, None
@@ -88,13 +89,14 @@ class BasePLDataModule(pl.LightningDataModule):
             raise ValueError("--do_train requires a train dataset")
         if self.conf.max_train_samples is not None:
             self.train_dataset = self.train_dataset.select(range(self.conf.max_train_samples))
+        print('self.train_dataset', self.conf.train_file)
         self.train_dataset = self.train_dataset.map(
             self.preprocess_function,
             batched=True,
             num_proc=self.conf.preprocessing_num_workers,
             remove_columns=self.column_names,
             load_from_cache_file=not self.conf.overwrite_cache,
-            cache_file_name=self.conf.train_file.replace('.jsonl', '-') + self.conf.dataset_name.split('/')[-1].replace('.py', '.cache'),
+            cache_file_name=str(self.conf.train_file).replace('.jsonl', '-') + self.conf.dataset_name.split('/')[-1].replace('.py', '.cache'),
         )
 
         if self.conf.do_eval:
@@ -110,7 +112,7 @@ class BasePLDataModule(pl.LightningDataModule):
                 num_proc=self.conf.preprocessing_num_workers,
                 remove_columns=self.column_names,
                 load_from_cache_file=not self.conf.overwrite_cache,
-                cache_file_name=self.conf.validation_file.replace('.jsonl', '-') + self.conf.dataset_name.split('/')[-1].replace('.py', '.cache'),
+                cache_file_name=str(self.conf.validation_file).replace('.jsonl', '-') + self.conf.dataset_name.split('/')[-1].replace('.py', '.cache'),
             )
 
         if self.conf.do_predict:
@@ -126,7 +128,7 @@ class BasePLDataModule(pl.LightningDataModule):
                 num_proc=self.conf.preprocessing_num_workers,
                 remove_columns=self.column_names,
                 load_from_cache_file=not self.conf.overwrite_cache,
-                cache_file_name=self.conf.test_file.replace('.jsonl', '-') + self.conf.dataset_name.split('/')[-1].replace('.py', '.cache'),
+                cache_file_name=str(self.conf.test_file).replace('.jsonl', '-') + self.conf.dataset_name.split('/')[-1].replace('.py', '.cache'),
             )
 
     def train_dataloader(self, *args, **kwargs) -> DataLoader:

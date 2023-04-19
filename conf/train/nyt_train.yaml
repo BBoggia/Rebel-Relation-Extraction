@@ -18,7 +18,8 @@ model_name: 'nyt'
 save_top_k: 1
 
 # core
-gpus: 1
+accelerator: 'gpu'
+devices: 1
 precision: 16
 amp_level: 
 

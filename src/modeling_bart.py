@@ -47,7 +47,7 @@ from transformers.utils import logging
 from transformers.models.configuration_bart import BartConfig
 
 
-logger = logging.get_logger(__name__)
+#logger = logging.get_logger(__name__)
 
 _CONFIG_FOR_DOC = "BartConfig"
 _TOKENIZER_FOR_DOC = "BartTokenizer"
@@ -1010,10 +1010,10 @@ class BartDecoder(BartPretrainedModel):
             if getattr(self.config, "gradient_checkpointing", False) and self.training:
 
                 if use_cache:
-                    logger.warn(
-                        "`use_cache=True` is incompatible with `config.gradient_checkpointing=True`. Setting "
-                        "`use_cache=False`..."
-                    )
+                    # logger.warn(
+                    #     "`use_cache=True` is incompatible with `config.gradient_checkpointing=True`. Setting "
+                    #     "`use_cache=False`..."
+                    # )
                     use_cache = False
 
                 def create_custom_forward(module):
