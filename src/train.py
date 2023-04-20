@@ -8,7 +8,6 @@ from pl_data_modules import BasePLDataModule
 from pl_modules import BasePLModule
 from transformers import AutoConfig, AutoModelForSeq2SeqLM, AutoTokenizer
 
-from pytorch_lightning.loggers.neptune import NeptuneLogger
 from pytorch_lightning.loggers.wandb import WandbLogger
 
 from pytorch_lightning.callbacks import LearningRateMonitor
@@ -55,7 +54,7 @@ def train(conf: omegaconf.DictConfig) -> None:
 
     # main module declaration
     pl_module = BasePLModule(conf, config, tokenizer, model)
-    #wandb_logger = WandbLogger(project = conf.dataset_name.split('/')[-1].replace('.py', ''), name = conf.model_name_or_path.split('/')[-1])
+    wandb_logger = WandbLogger(project = conf.dataset_name.split('/')[-1].replace('.py', ''), name = conf.model_name_or_path.split('/')[-1])
 
     callbacks_store = []
 
@@ -92,7 +91,7 @@ def train(conf: omegaconf.DictConfig) -> None:
         max_steps=conf.max_steps,
         # max_steps=total_steps,
         precision=conf.precision,
-        #logger=wandb_logger,
+        logger=wandb_logger,
         limit_val_batches=conf.val_percent_check
     )
 

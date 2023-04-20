@@ -6,6 +6,9 @@ from torch import nn
 import pandas as pd
 from torch.nn.utils.rnn import pad_sequence
 import wandb
+
+torch.set_float32_matmul_precision('high')
+
 class GenerateTextSamplesCallback(Callback):  # pragma: no cover
     """
     PL Callback to generate triplets along training

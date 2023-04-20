@@ -1,7 +1,7 @@
 # @package _global_
 
-num_workers: 6
-dataset_name: 'c:/Users/Branson/Desktop/rebel/docred_typed.py'
+num_workers: 12
+dataset_name: 'c:/Users/Branson/Desktop/rebel/datasets/docred_typed.py'
 text_column: 'context'
 target_column: 'triplets'
 train_file: 'c:/Users/Branson/Desktop/rebel/data/docred_joint/train_joint.json'

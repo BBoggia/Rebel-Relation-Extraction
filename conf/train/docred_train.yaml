@@ -1,11 +1,11 @@
 # @package _global_
 
 # optimization
-train_batch_size: 4
-eval_batch_size: 8
+train_batch_size: 6
+eval_batch_size: 12
 gradient_acc_steps: 8
 gradient_clip_value: 10.0
-max_steps: 2000
+max_steps: 6000
 
 # evaluation and persistence
 apply_early_stopping: False
@@ -20,7 +20,7 @@ save_top_k: 3
 # core
 accelerator: 'gpu'
 devices: 1
-precision: 16
+precision: '16-mixed'
 amp_level: 
 
 do_train: True
@@ -46,7 +46,7 @@ adam_beta2: 0.999
 adam_epsilon: 0.00000001
 max_grad_norm: 1.0
 
-num_train_epochs: 10.0
+num_train_epochs: 20.0
 
 seed: 42
 

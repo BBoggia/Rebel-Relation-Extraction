@@ -6,10 +6,10 @@ omegaconf==2.0.6
 pandas==2.0.0
 pytorch_lightning==2.0.1.post0
 spacy==3.5.2
-streamlit==0.82.0
+streamlit
 torch==2.0.0
 transformers==4.19.2
 wandb
 rouge-score==0.0.4
 protobuf==3.20.0
-neptune-client==1.1.1
+neptune==1.1.1

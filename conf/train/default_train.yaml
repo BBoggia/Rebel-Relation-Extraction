@@ -20,7 +20,7 @@ save_top_k: 3
 # core
 accelerator: 'gpu'
 devices: 1
-precision: 16
+precision: '16-mixed'
 amp_level: 
 
 do_train: True

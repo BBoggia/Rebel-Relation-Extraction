@@ -25,6 +25,8 @@ import torch.utils.checkpoint
 from torch import nn
 from torch.nn import CrossEntropyLoss
 
+torch.set_float32_matmul_precision('high')
+
 from transformers.activations import ACT2FN
 from transformers.file_utils import (
     add_code_sample_docstrings,
@@ -44,10 +46,10 @@ from transformers.modeling_outputs import (
 )
 from transformers.modeling_utils import PreTrainedModel
 from transformers.utils import logging
-from transformers.models.configuration_bart import BartConfig
+from transformers.models.bart.configuration_bart import BartConfig
 
 
-#logger = logging.get_logger(__name__)
+logger = logging.get_logger(__name__)
 
 _CONFIG_FOR_DOC = "BartConfig"
 _TOKENIZER_FOR_DOC = "BartTokenizer"

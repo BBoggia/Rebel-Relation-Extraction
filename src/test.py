@@ -8,7 +8,6 @@ from pl_data_modules import BasePLDataModule
 from pl_modules import BasePLModule
 from transformers import AutoConfig, AutoModelForSeq2SeqLM, AutoTokenizer
 
-from pytorch_lightning.loggers.neptune import NeptuneLogger
 from pytorch_lightning.callbacks import LearningRateMonitor
 from generate_samples import GenerateTextSamplesCallback
 

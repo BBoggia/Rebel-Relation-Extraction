@@ -20,7 +20,7 @@ save_top_k: 1
 # core
 accelerator: 'gpu'
 devices: 1
-precision: 16
+precision: '16-mixed'
 amp_level: 
 
 do_train: True
@@ -56,7 +56,7 @@ local_rank: -1
 
 dataloader_drop_last: False
 eval_steps: 
-dataloader_num_workers: 0
+dataloader_num_workers: 4
 
 past_index: -1
 

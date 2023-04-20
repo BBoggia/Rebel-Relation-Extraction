@@ -3,15 +3,18 @@ from datasets import load_dataset
 from transformers import AutoConfig, AutoModelForSeq2SeqLM, AutoTokenizer
 from time import time
 import torch
+import os
 
-@st.cache(
-    allow_output_mutation=True,
-    hash_funcs={
-        AutoTokenizer: lambda x: None,
-        AutoModelForSeq2SeqLM: lambda x: None,
-    },
-    suppress_st_warning=True
-)
+torch.set_float32_matmul_precision('high')
+
+# @st.cache(
+#     allow_output_mutation=True,
+#     hash_funcs={
+#         AutoTokenizer: lambda x: None,
+#         AutoModelForSeq2SeqLM: lambda x: None,
+#     },
+#     suppress_st_warning=True
+# )
 def load_models():
     st_time = time()
     tokenizer = AutoTokenizer.from_pretrained("Babelscape/rebel-large")
@@ -21,7 +24,9 @@ def load_models():
         _ = model.to("cuda:0") # comment if no GPU available
     _ = model.eval()
     print("+++++ loaded model", time() - st_time)
-    dataset = load_dataset('datasets/rebel-short.py', data_files={'train': 'data/rebel/sample.jsonl', 'dev': 'data/rebel/sample.jsonl', 'test': 'data/rebel/sample.jsonl', 'relations': "data/relations_count.tsv"}, split="validation")
+    project_root = os.path.dirname(os.path.abspath(__file__))
+    dataset = load_dataset(os.path.join(project_root, 'datasets/rebel-short.py'), data_files={'train': os.path.join(project_root, 'data/rebel/sample.jsonl'), 'dev': os.path.join(project_root, 'data/rebel/sample.jsonl'), 'test': os.path.join(project_root, 'data/rebel/sample.jsonl'), 'relations': os.path.join(project_root, "data/relations_count.tsv")}, split="validation")
+    #dataset = load_dataset('datasets\\rebel-short.py', data_files={'train': 'data\\rebel\\sample.jsonl', 'dev': 'data\\rebel\\sample.jsonl', 'test': 'data\\rebel\\sample.jsonl', 'relations': "data\\relations_count.tsv"}, split="validation")
     return (tokenizer, model, dataset)
 
 def extract_triplets(text):

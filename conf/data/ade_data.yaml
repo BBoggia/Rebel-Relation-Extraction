@@ -1,7 +1,7 @@
 # @package _global_
 
-num_workers: 8
-dataset_name: 'c:/Users/Branson/Desktop/rebel/ade.py'
+num_workers: 12
+dataset_name: 'c:/Users/Branson/Desktop/rebel/datasets/ade.py'
 text_column: 'context'
 target_column: 'triplets'
 train_file: 'c:/Users/Branson/Desktop/rebel/data/ade/ade_split_0_train.json'
@@ -17,7 +17,7 @@ max_train_samples:
 max_val_samples: 
 max_test_samples: 
 num_beams: 
-eval_beams: 3
+eval_beams: 5
 ignore_pad_token_for_loss: True
 source_prefix: 
 relations_file: 

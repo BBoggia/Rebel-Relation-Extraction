@@ -2,6 +2,9 @@ from pl_modules import BasePLModule
 from transformers import AutoConfig, AutoModelForSeq2SeqLM, AutoTokenizer
 import torch
 import omegaconf
+
+torch.set_float32_matmul_precision('high')
+
 config = AutoConfig.from_pretrained(
     'facebook/bart-large',
     decoder_start_token_id = 0,

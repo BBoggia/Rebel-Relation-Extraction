@@ -10,6 +10,7 @@ from torch import Tensor
 from torch.nn.parameter import Parameter
 from transformers.models.bart.modeling_bart import shift_tokens_right
 
+torch.set_float32_matmul_precision('high')
 
 def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=-100):
     """From fairseq"""

@@ -9,7 +9,7 @@ from score import score, re_score
 from transformers import AutoConfig, AutoModelForSeq2SeqLM, AutoTokenizer
 from transformers.optimization import (
     Adafactor,
-    AdamW,
+    #AdamW,
     get_constant_schedule,
     get_constant_schedule_with_warmup,
     get_cosine_schedule_with_warmup,
@@ -22,6 +22,8 @@ from datasets import load_dataset
 import evaluate
 from torch.nn.utils.rnn import pad_sequence
 from utils import BartTripletHead, shift_tokens_left, extract_triplets_typed, extract_triplets
+
+torch.set_float32_matmul_precision('high')
 
 arg_to_scheduler = {
     "linear": get_linear_schedule_with_warmup,
@@ -326,9 +328,9 @@ class BasePLModule(pl.LightningModule):
             relations_df = pd.read_csv(self.hparams.relations_file, header = None, sep='\t')
             relations = list(relations_df[0])
             scores, precision, recall, f1 = re_score([item for pred in output for item in pred['predictions']], [item for pred in output for item in pred['labels']], relations)
-            self.log('val_prec_micro', precision)
-            self.log('val_recall_micro', recall)
-            self.log('val_F1_micro', f1)
+            self.log('val_prec_micro', torch.float32(precision))
+            self.log('val_recall_micro', torch.float32(recall))
+            self.log('val_F1_micro', torch.float32(f1))
         elif not 'tacred' in self.hparams.dataset_name.split('/')[-1]:
             if self.hparams.dataset_name.split('/')[-1] == 'conll04_typed.py':
                 scores, precision, recall, f1 = re_score([item for pred in output for item in pred['predictions']], [item for pred in output for item in pred['labels']], ['killed by', 'residence', 'location', 'headquarters location', 'employer'], "strict")
@@ -341,9 +343,9 @@ class BasePLModule(pl.LightningModule):
                 scores, precision, recall, f1 = re_score([item for pred in output for item in pred['predictions']], [item for pred in output for item in pred['labels']], list(relations_docred.values()), "strict")            
             else:
                 scores, precision, recall, f1 = re_score([item for pred in output for item in pred['predictions']], [item for pred in output for item in pred['labels']], ['killed by', 'residence', 'location', 'headquarters location', 'employer'])
-            self.log('val_prec_micro', precision)
-            self.log('val_recall_micro', recall)
-            self.log('val_F1_micro', f1)
+            self.log('val_prec_micro', torch.float32(precision))
+            self.log('val_recall_micro', torch.float32(recall))
+            self.log('val_F1_micro', torch.float32(f1))
         else:
             key = []
             preds_list = []
@@ -355,9 +357,9 @@ class BasePLModule(pl.LightningModule):
                     preds_list.append(pred[0]["type"])
                     labels_list.append(lab[0]["type"])
             prec_micro, recall_micro, f1_micro = score(labels_list, preds_list, verbose=True)
-            self.log('val_prec_micro', prec_micro)
-            self.log('val_recall_micro', recall_micro)
-            self.log('val_F1_micro', f1_micro)
+            self.log('val_prec_micro', torch.float32(prec_micro))
+            self.log('val_recall_micro', torch.float32(recall_micro))
+            self.log('val_F1_micro', torch.float32(f1_micro))
         self.val_outputs = []  # Clear the outputs for the next epoch
 
     def test_step(self, batch: dict, batch_idx: int) -> None:
@@ -491,12 +493,12 @@ class BasePLModule(pl.LightningModule):
                 "weight_decay": 0.0,
             },
         ]
-        optimizer_cls = Adafactor if self.hparams.adafactor else AdamW
+        optimizer_cls = Adafactor if self.hparams.adafactor else torch.optim.AdamW
         if self.hparams.adafactor:
             optimizer_cls = Adafactor
             optimizer_kwargs = {"scale_parameter": False, "relative_step": False}
         else:
-            optimizer_cls = AdamW
+            optimizer_cls = torch.optim.AdamW
             optimizer_kwargs = {
                 "betas": (self.hparams.adam_beta1, self.hparams.adam_beta2),
                 "eps": self.hparams.adam_epsilon,

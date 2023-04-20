@@ -15,6 +15,8 @@ from transformers import (
     set_seed,
 )
 
+torch.set_float32_matmul_precision('high')
+
 class BasePLDataModule(pl.LightningDataModule):
     """
     FROM LIGHTNING DOCUMENTATION
@@ -62,7 +64,6 @@ class BasePLDataModule(pl.LightningDataModule):
         self.conf = conf
         self.tokenizer = tokenizer
         self.model = model
-        print('conf.dataset_name', conf.train_file)
         if conf.relations_file:
             self.datasets = load_dataset(str(conf.dataset_name), data_files={'train': str(conf.train_file), 'dev': str(conf.validation_file), 'test': str(conf.test_file), 'relations': str(conf.relations_file)})
         else:
@@ -89,7 +90,6 @@ class BasePLDataModule(pl.LightningDataModule):
             raise ValueError("--do_train requires a train dataset")
         if self.conf.max_train_samples is not None:
             self.train_dataset = self.train_dataset.select(range(self.conf.max_train_samples))
-        print('self.train_dataset', self.conf.train_file)
         self.train_dataset = self.train_dataset.map(
             self.preprocess_function,
             batched=True,
