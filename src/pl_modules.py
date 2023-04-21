@@ -328,9 +328,9 @@ class BasePLModule(pl.LightningModule):
             relations_df = pd.read_csv(self.hparams.relations_file, header = None, sep='\t')
             relations = list(relations_df[0])
             scores, precision, recall, f1 = re_score([item for pred in output for item in pred['predictions']], [item for pred in output for item in pred['labels']], relations)
-            self.log('val_prec_micro', torch.float32(precision))
-            self.log('val_recall_micro', torch.float32(recall))
-            self.log('val_F1_micro', torch.float32(f1))
+            self.log('val_prec_micro', torch.tensor(precision, dtype=torch.float32))
+            self.log('val_recall_micro', torch.tensor(recall, dtype=torch.float32))
+            self.log('val_F1_micro', torch.tensor(f1, dtype=torch.float32))
         elif not 'tacred' in self.hparams.dataset_name.split('/')[-1]:
             if self.hparams.dataset_name.split('/')[-1] == 'conll04_typed.py':
                 scores, precision, recall, f1 = re_score([item for pred in output for item in pred['predictions']], [item for pred in output for item in pred['labels']], ['killed by', 'residence', 'location', 'headquarters location', 'employer'], "strict")
@@ -343,9 +343,9 @@ class BasePLModule(pl.LightningModule):
                 scores, precision, recall, f1 = re_score([item for pred in output for item in pred['predictions']], [item for pred in output for item in pred['labels']], list(relations_docred.values()), "strict")            
             else:
                 scores, precision, recall, f1 = re_score([item for pred in output for item in pred['predictions']], [item for pred in output for item in pred['labels']], ['killed by', 'residence', 'location', 'headquarters location', 'employer'])
-            self.log('val_prec_micro', torch.float32(precision))
-            self.log('val_recall_micro', torch.float32(recall))
-            self.log('val_F1_micro', torch.float32(f1))
+            self.log('val_prec_micro', torch.tensor(precision, dtype=torch.float32))
+            self.log('val_recall_micro', torch.tensor(recall, dtype=torch.float32))
+            self.log('val_F1_micro', torch.tensor(f1, dtype=torch.float32))
         else:
             key = []
             preds_list = []
@@ -357,9 +357,9 @@ class BasePLModule(pl.LightningModule):
                     preds_list.append(pred[0]["type"])
                     labels_list.append(lab[0]["type"])
             prec_micro, recall_micro, f1_micro = score(labels_list, preds_list, verbose=True)
-            self.log('val_prec_micro', torch.float32(prec_micro))
-            self.log('val_recall_micro', torch.float32(recall_micro))
-            self.log('val_F1_micro', torch.float32(f1_micro))
+            self.log('val_prec_micro', torch.tensor(prec_micro, dtype=torch.float32))
+            self.log('val_recall_micro', torch.tensor(recall_micro, dtype=torch.float32))
+            self.log('val_F1_micro', torch.tensor(f1_micro, dtype=torch.float32))
         self.val_outputs = []  # Clear the outputs for the next epoch
 
     def test_step(self, batch: dict, batch_idx: int) -> None:
